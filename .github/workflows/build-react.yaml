@@ -6,10 +6,13 @@ on:
 
 jobs:
   build-react:
+
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: ./src/frontend/test-app
+
     steps:
       - uses: actions/checkout@v3
 
@@ -30,7 +33,7 @@ jobs:
 
       - run: npm run build
 
-      - run: cp -r ./build/ ../../../backend/test-app/public
+      - run: cp -r ./build/ ../../backend/test-app/public
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v2
