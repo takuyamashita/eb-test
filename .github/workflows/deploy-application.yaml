@@ -22,15 +22,16 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.x
+          cache: npm
 
       - uses: actions/cache@v3
         id: cache-node-modules
         env:
           cache-name: cache-node-modules
         with:
-          path: 'node_modules'
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          path: '**/node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
 
       - if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm install
