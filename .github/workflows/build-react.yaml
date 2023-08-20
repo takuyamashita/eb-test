@@ -48,4 +48,4 @@ jobs:
 
       - name:  upload to s3
         run: |
-          aws s3 sync ../../../backend/test-app/public s3://eb-test-public --delete
+          aws s3 sync ../../backend/test-app/public s3://eb-test-public --delete
