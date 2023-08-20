@@ -90,5 +90,5 @@ jobs:
       
       - name: deploy to eb
         run: eb list
-        run: eb deploy Test-env-1
+        #run: eb deploy Test-env-1
 
