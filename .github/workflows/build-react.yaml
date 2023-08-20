@@ -28,4 +28,17 @@ jobs:
       - if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm install
 
-      - run: npm run build    
+      - run: npm run build
+
+      - run: cp -r build/ ../../../backend/test-app/public
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::892369073500:instance-profile/elb-ec2
+          role-session-name: eb-test-role
+          aws-region: ap-northeast-1
+
+      - name:  upload to s3
+        run: |
+          aws s3 cp ../../../backend/test-app/public s3://eb-test-public --delete
