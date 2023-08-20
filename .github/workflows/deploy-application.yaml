@@ -62,17 +62,17 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
-          python-version: 3.6
+          python-version: 3.7
           cache: 'pip'
       
       - name: install awsebcli
         run: |
-          pip install pip --upgrade
+          echo "~/.local/bin" >> $GITHUB_PATH
+          python -m pip install --upgrade pip
           pip install setuptools --upgrade
           pip install awsebcli --upgrade
-          echo "~/.local/bin" >> $GITHUB_PATH
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v2
