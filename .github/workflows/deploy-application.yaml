@@ -85,7 +85,7 @@ jobs:
         run: |
           mkdir -p ./.elasticbeanstalk
           touch ./.elasticbeanstalk/config.yml
-          echo ${{ vars.EB_CONFIG_YML }} > ./.elasticbeanstalk/config.yml
+          echo "${{ vars.EB_CONFIG_YML }}" > ./.elasticbeanstalk/config.yml
       
       - name: deploy to eb
         run: eb deploy Test-env-1 --profile eb-test-role
