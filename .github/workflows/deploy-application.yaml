@@ -37,7 +37,7 @@ jobs:
 
       - run: npm run build
 
-      - run: cp -r ./build/ ../../backend/test-app/public
+      - run: cp -rf ./build/* ../../backend/test-app/public/
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v2
