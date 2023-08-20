@@ -90,6 +90,7 @@ jobs:
       
       - name: deploy to eb
         run: |
+          aws s3 ls
           eb list
-          eb deploy Test-env-1
+          #eb deploy Test-env-1
 
