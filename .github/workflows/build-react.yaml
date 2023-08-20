@@ -28,8 +28,9 @@ jobs:
         env:
           cache-name: cache-node-modules
         with:
-          path: '**/node_modules'
+          path: 'node_modules'
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
 
       - if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm install
@@ -47,4 +48,4 @@ jobs:
 
       - name:  upload to s3
         run: |
-          aws s3 cp ../../../backend/test-app/public s3://eb-test-public --delete
+          aws s3 sync ../../../backend/test-app/public s3://eb-test-public --delete
