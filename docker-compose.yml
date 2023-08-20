@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+
+  nginx:
+    build: 
+      context: ./dev/docker/nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - laravel
+      - react
+
+  laravel:
+    build:
+      context: ./dev/docker/laravel
+    volumes:
+      - ./src/backend/test-app:/var/www/
+
+  react:
+    build:
+      context: ./dev/docker/react
+    tty: true
+    volumes:
+      - ./src/frontend/test-app:/usr/src/app
+  
+  eb:
+    build:
+      context: ./dev/docker/eb
+      args:
+        - AWS_ROLE_ARN=${AWS_ROLE_ARN}
+    tty: true
+    volumes:
+      - ./src:/app/src
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+      - AWS_DEFAULT_PROFILE=${AWS_DEFAULT_PROFILE}

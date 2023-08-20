@@ -1,0 +1,37 @@
+name: Build React
+
+on:
+  workflow_dispatch:
+
+
+jobs:
+  build-react:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./src/backend/test-app
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 12.x
+
+      - uses: actions/cache@v3
+        id: cache-node-modules
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+
+      - if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm install
+
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 12.x
+
+      - run: npm run build    

@@ -1,0 +1,6 @@
+[profile default]
+region = ap-northeast-1
+output = json
+
+[profile test]
+credential_source = Environment 
