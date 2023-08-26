@@ -33,7 +33,7 @@ jobs:
         id: increment_version
         run: |
           version=${{ steps.get_current_version.outputs.version }}
-          a=( ${$version//./ } )
+          a=( {$version//./ } )
           ((a[2]++))
           echo "::set-output name=version::${a[0]}.${a[1]}.${a[2]}"
 
