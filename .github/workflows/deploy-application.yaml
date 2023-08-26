@@ -82,5 +82,5 @@ jobs:
           aws elasticbeanstalk create-application-version
           --application-name eb-test
           --version-label 1.0.1
-          --source-bundle S3Bucket="${{ secrest.MAIN_ARTIFACT_BUCKET }}",S3Key="main-artifact/main.zip"
+          --source-bundle S3Bucket="${{ secrets.MAIN_ARTIFACT_BUCKET }}",S3Key="main-artifact/main.zip"
 
