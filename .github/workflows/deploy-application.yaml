@@ -70,24 +70,47 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/eb-test-github-actions-role
           role-session-name: eb-test-role
           aws-region: ap-northeast-1
+
+      - name: get current version
+        id: get_current_version
+        run: |
+          version=$(aws elasticbeanstalk describe-application-versions --application-name eb-test --query 'ApplicationVersions[0].VersionLabel' | sed -E 's/.*-//')
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: increment version
+        id: increment_version
+        run: |
+          version=${{ steps.get_current_version.outputs.version }}
+          a=(${version//./ })
+          echo "version=${a[0]}.${a[1]}.$((a[2]+1))" >> "$GITHUB_OUTPUT"
+      
+      - name: define artifact name
+        id: define_artifact_name
+        run: >
+          echo
+          "artifact_name=main-${{ steps.increment_version.outputs.version }}-${{ github.sha }}.zip"
+          >> "$GITHUB_OUTPUT"
       
       - name: make artifact
-        run: git archive --format=zip HEAD -o main.zip
+        run: git archive --format=zip HEAD -o ${{ steps.define_artifact_name.outputs.artifact_name }}
       
       - name: upload artifact
-        run: aws s3 cp main.zip s3://${{ secrets.MAIN_ARTIFACT_BUCKET }}/main-artifact/main-${{ github.sha }}.zip
+        run: >
+          aws s3 cp
+          main.zip
+          s3://${{ secrets.MAIN_ARTIFACT_BUCKET }}/main-artifact/${{ steps.define_artifact_name.outputs.artifact_name }}
       
       - name: make version
         run: >
           aws elasticbeanstalk create-application-version
           --application-name eb-test
-          --version-label 1.0.2
-          --source-bundle S3Bucket="${{ secrets.MAIN_ARTIFACT_BUCKET }}",S3Key="main-artifact/main-${{ github.sha }}.zip"
+          --version-label {{ steps.increment_version.outputs.version }}
+          --source-bundle S3Bucket="${{ secrets.MAIN_ARTIFACT_BUCKET }}",S3Key="${{ steps.define_artifact_name.outputs.artifact_name }}"
       
       - name: set version
         run: >
           aws elasticbeanstalk update-environment
           --application-name eb-test
           --environment-name main
-          --version-label 1.0.2
+          --version-label {{ steps.increment_version.outputs.version }}
 
