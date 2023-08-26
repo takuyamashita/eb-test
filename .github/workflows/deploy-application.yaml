@@ -79,7 +79,7 @@ jobs:
       - name: make artifact
         run: git archive --format=zip HEAD -o main.zip
       
-      - make: upload artifact
+      - name: upload artifact
         run: |
           aws s3 cp main.zip s3://${{ secrets.MAIN_ARTIFACT_BUCKET }}/main.zip
       
