@@ -105,7 +105,7 @@ jobs:
           aws elasticbeanstalk create-application-version
           --application-name eb-test
           --version-label ${{ steps.increment_version.outputs.version }}
-          --source-bundle S3Bucket="${{ secrets.MAIN_ARTIFACT_BUCKET }}",S3Key="${{ steps.define_artifact_name.outputs.artifact_name }}"
+          --source-bundle S3Bucket="${{ secrets.MAIN_ARTIFACT_BUCKET }}",S3Key="main-artifact/${{ steps.define_artifact_name.outputs.artifact_name }}"
       
       - name: set version
         run: >
