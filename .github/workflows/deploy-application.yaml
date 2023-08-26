@@ -22,8 +22,17 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.x
-          cache: npm
-          cache-dependency-path: ./src/frontend/test-app/package-lock.json
+      
+      - name: make env file
+        run: |
+          touch .env
+          echo "${{ secrets.REACT_ENV_FILE }}" > .env
+      
+      - use: actions/cache@v3
+        id: cache-node-modules
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
 
       - if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm install
@@ -35,7 +44,7 @@ jobs:
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/eb-cli
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/eb-test-github-actions-role
           role-session-name: eb-test-role
           aws-region: ap-northeast-1
 
@@ -59,31 +68,25 @@ jobs:
         with:
           python-version: 3.7
           cache: 'pip'
-      
-      - name: install awsebcli
-        run: |
-          echo "~/.local/bin" >> $GITHUB_PATH
-          python -m pip install --upgrade pip
-          pip install setuptools --upgrade
-          pip install awsebcli --upgrade
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/eb-cli
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/eb-test-github-actions-role
           role-session-name: eb-test-role
           aws-region: ap-northeast-1
       
-      - name: make eb config
-        run: |
-          mkdir -p ./.elasticbeanstalk
-          touch ./.elasticbeanstalk/config.yml
-          echo "${{ vars.EB_CONFIG_YML }}" > ./.elasticbeanstalk/config.yml
-          cat ./.elasticbeanstalk/config.yml
+      - name: make artifact
+        run: git archive --format=zip HEAD -o main.zip
       
-      - name: deploy to eb
+      - make: upload artifact
         run: |
-          aws s3 ls
-          eb list
-          eb deploy Test-env-1
+          aws s3 cp main.zip s3://${{ secrets.MAIN_ARTIFACT_BUCKET }}/main.zip
+      
+      - name: make version
+        run: >
+          aws elasticbeanstalk create-application-version
+          --application-name eb-test
+          --version-label 1.0.1
+          --source-bundle S3Bucket="${{ secrest.MAIN_ARTIFACT_BUCKET }}",S3Key="my-app/main.zip"
 
