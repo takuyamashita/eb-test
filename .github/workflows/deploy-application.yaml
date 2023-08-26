@@ -75,12 +75,19 @@ jobs:
         run: git archive --format=zip HEAD -o main.zip
       
       - name: upload artifact
-        run: aws s3 cp main.zip s3://${{ secrets.MAIN_ARTIFACT_BUCKET }}/main-artifact/main.zip
+        run: aws s3 cp main.zip s3://${{ secrets.MAIN_ARTIFACT_BUCKET }}/main-artifact/main-${{ github.sha }}.zip
       
       - name: make version
         run: >
           aws elasticbeanstalk create-application-version
           --application-name eb-test
-          --version-label 1.0.1
-          --source-bundle S3Bucket="${{ secrets.MAIN_ARTIFACT_BUCKET }}",S3Key="main-artifact/main.zip"
+          --version-label 1.0.2
+          --source-bundle S3Bucket="${{ secrets.MAIN_ARTIFACT_BUCKET }}",S3Key="main-artifact/main-${{ github.sha }}.zip"
+      
+      - name: set version
+        run: >
+          aws elasticbeanstalk update-environment
+          --application-name eb-test
+          --environment-name main
+          --version-label 1.0.2
 
