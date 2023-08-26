@@ -64,11 +64,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-python@v4
-        with:
-          python-version: 3.7
-          cache: 'pip'
-
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -80,13 +75,12 @@ jobs:
         run: git archive --format=zip HEAD -o main.zip
       
       - name: upload artifact
-        run: |
-          aws s3 cp main.zip s3://${{ secrets.MAIN_ARTIFACT_BUCKET }}/main.zip
+        run: aws s3 cp main.zip s3://${{ secrets.MAIN_ARTIFACT_BUCKET }}/main-artifact/main.zip
       
       - name: make version
         run: >
           aws elasticbeanstalk create-application-version
           --application-name eb-test
           --version-label 1.0.1
-          --source-bundle S3Bucket="${{ secrest.MAIN_ARTIFACT_BUCKET }}",S3Key="my-app/main.zip"
+          --source-bundle S3Bucket="${{ secrest.MAIN_ARTIFACT_BUCKET }}",S3Key="main-artifact/main.zip"
 
