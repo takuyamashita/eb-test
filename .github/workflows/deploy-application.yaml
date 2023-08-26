@@ -97,7 +97,7 @@ jobs:
       - name: upload artifact
         run: >
           aws s3 cp
-          main.zip
+          ${{ steps.define_artifact_name.outputs.artifact_name }}
           s3://${{ secrets.MAIN_ARTIFACT_BUCKET }}/main-artifact/${{ steps.define_artifact_name.outputs.artifact_name }}
       
       - name: make version
