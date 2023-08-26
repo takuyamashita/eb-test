@@ -34,8 +34,7 @@ jobs:
         run: |
           version=${{ steps.get_current_version.outputs.version }}
           a=({$version//./ })
-          $((a[2]++))
-          echo "version=${a[0]}.${a[1]}.${a[2]}" >> "$GITHUB_OUTPUT"
+          echo "version=${a[0]}.${a[1]}.$((a[2]+1))" >> "$GITHUB_OUTPUT"
 
       - name: version
         run: |
