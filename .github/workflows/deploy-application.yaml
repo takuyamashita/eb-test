@@ -28,7 +28,7 @@ jobs:
           touch .env
           echo "${{ secrets.REACT_ENV_FILE }}" > .env
       
-      - use: actions/cache@v3
+      - uses: actions/cache@v3
         id: cache-node-modules
         with:
           path: '**/node_modules'
