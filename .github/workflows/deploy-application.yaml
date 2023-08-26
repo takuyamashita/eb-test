@@ -48,7 +48,7 @@ jobs:
           role-session-name: eb-test-role
           aws-region: ap-northeast-1
 
-      - name:  upload to s3
+      - name: upload to s3
         run: |
           aws s3 sync ../../backend/test-app/public s3://eb-test-public --delete --quiet
     
