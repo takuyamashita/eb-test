@@ -26,7 +26,7 @@ jobs:
         id: get_current_version
         run: |
           version=$(aws elasticbeanstalk describe-application-versions --application-name eb-test --query 'ApplicationVersions[0].VersionLabel' | sed -E 's/.*-//')
-          echo "::set-output name=version::$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
 
 
       - name: increment version
@@ -35,7 +35,7 @@ jobs:
           version=${{ steps.get_current_version.outputs.version }}
           a=( {$version//./ } )
           ((a[2]++))
-          echo "::set-output name=version::${a[0]}.${a[1]}.${a[2]}"
+          echo "version=${a[0]}.${a[1]}.${a[2]}" >> "$GITHUB_OUTPUT"
 
       - name: version
         run: |
